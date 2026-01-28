@@ -1,0 +1,18 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "SMTP_HOST": "smtp.example.com",
+    "SMTP_PORT": "587",
+    "SMTP_USER": "your-user",
+    "SMTP_PASS": "your-pass",
+    "SMTP_SECURE": "false",
+    "DIGEST_FROM": "Daily Digest <digest@example.com>",
+    "DIGEST_TO": "you@example.com",
+    "DIGEST_SUBJECT": "Daily Tech + Hiring Digest",
+    "LOOKBACK_HOURS": "36",
+    "MAX_ITEMS_PER_SECTION": "12",
+    "DRY_RUN": "false"
+  }
+}

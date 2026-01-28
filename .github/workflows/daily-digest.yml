@@ -1,0 +1,39 @@
+name: Daily Tech + Hiring Digest
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, do not send email; log the digest to the job output."
+        required: false
+        default: "false"
+      lookback_hours:
+        description: "Override LOOKBACK_HOURS for this run."
+        required: false
+        default: ""
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci
+      - run: npm run build
+      - run: npm run start
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          DIGEST_FROM: ${{ secrets.DIGEST_FROM }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+          DIGEST_SUBJECT: ${{ secrets.DIGEST_SUBJECT }}
+          LOOKBACK_HOURS: ${{ github.event.inputs.lookback_hours || secrets.LOOKBACK_HOURS }}
+          MAX_ITEMS_PER_SECTION: ${{ secrets.MAX_ITEMS_PER_SECTION }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || secrets.DRY_RUN }}
