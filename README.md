@@ -29,6 +29,7 @@ npm run run
 - The script looks back `LOOKBACK_HOURS` to avoid missing late-night posts.
 - Set `DRY_RUN=true` to print the digest to stdout without sending email.
 - Feeds live in `src/feeds.ts` if you want to tweak sources or queries.
+- Optional: enable LLM summaries by setting `OPENAI_API_KEY` and `SUMMARIZE_ENABLED=true`.
 
 ## GitHub Actions schedule
 

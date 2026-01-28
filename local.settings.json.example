@@ -13,6 +13,10 @@
     "DIGEST_SUBJECT": "Daily Tech + Hiring Digest",
     "LOOKBACK_HOURS": "36",
     "MAX_ITEMS_PER_SECTION": "12",
-    "DRY_RUN": "false"
+    "DRY_RUN": "false",
+    "OPENAI_API_KEY": "",
+    "SUMMARIZE_ENABLED": "false",
+    "SUMMARIZE_MODEL": "gpt-4o-mini",
+    "SUMMARIZE_TOP": "3"
   }
 }

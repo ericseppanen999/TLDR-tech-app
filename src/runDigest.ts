@@ -6,6 +6,7 @@ import { isHiringNews, isTechNews } from "./filters";
 import { dedupeItems, sortByPublishedDesc } from "./utils";
 import { sendDigest } from "./email";
 import { FeedItem, FeedSource } from "./types";
+import { summarizeHighlights } from "./summarize";
 
 async function fetchAllFeeds(): Promise<FeedItem[]> {
   const results = await Promise.all(
@@ -49,7 +50,25 @@ export async function runDigest(): Promise<void> {
   const deduped = dedupeItems(recentItems);
   const sorted = sortByPublishedDesc(deduped);
 
-  const digest = buildDigest(sorted, config.maxItemsPerSection, now);
+  const highlights = await summarizeHighlights(config, [
+    {
+      category: "hiring",
+      title: "Hiring News",
+      items: sorted.filter((item) => item.category === "hiring").slice(0, 24)
+    },
+    {
+      category: "tech",
+      title: "Tech News",
+      items: sorted.filter((item) => item.category === "tech").slice(0, 24)
+    },
+    {
+      category: "research",
+      title: "AI / Research Breakthroughs",
+      items: sorted.filter((item) => item.category === "research").slice(0, 24)
+    }
+  ]);
+
+  const digest = buildDigest(sorted, config.maxItemsPerSection, now, highlights || undefined);
   const subject = config.subject;
 
   if (config.dryRun) {

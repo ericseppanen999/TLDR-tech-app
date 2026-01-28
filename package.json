@@ -11,7 +11,8 @@
     "@azure/functions": "^4.4.0",
     "dotenv": "^16.4.5",
     "fast-xml-parser": "^4.3.6",
-    "nodemailer": "^6.9.14"
+    "nodemailer": "^6.9.14",
+    "openai": "^4.26.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",

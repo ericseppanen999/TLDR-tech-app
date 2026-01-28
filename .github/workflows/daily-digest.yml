@@ -37,3 +37,7 @@ jobs:
           LOOKBACK_HOURS: ${{ github.event.inputs.lookback_hours || secrets.LOOKBACK_HOURS }}
           MAX_ITEMS_PER_SECTION: ${{ secrets.MAX_ITEMS_PER_SECTION }}
           DRY_RUN: ${{ github.event.inputs.dry_run || secrets.DRY_RUN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SUMMARIZE_ENABLED: ${{ secrets.SUMMARIZE_ENABLED }}
+          SUMMARIZE_MODEL: ${{ secrets.SUMMARIZE_MODEL }}
+          SUMMARIZE_TOP: ${{ secrets.SUMMARIZE_TOP }}

@@ -12,6 +12,9 @@ export interface Config {
   lookbackHours: number;
   maxItemsPerSection: number;
   dryRun: boolean;
+  summarizeEnabled: boolean;
+  summarizeModel: string;
+  summarizeTop: number;
 }
 
 dotenv.config();
@@ -65,6 +68,9 @@ export function loadConfig(): Config {
     subject: process.env.DIGEST_SUBJECT || "Daily Tech + Hiring Digest",
     lookbackHours: parseNumber(process.env.LOOKBACK_HOURS, 36),
     maxItemsPerSection: parseNumber(process.env.MAX_ITEMS_PER_SECTION, 12),
-    dryRun
+    dryRun,
+    summarizeEnabled: parseBool(process.env.SUMMARIZE_ENABLED, false),
+    summarizeModel: process.env.SUMMARIZE_MODEL || "gpt-4o-mini",
+    summarizeTop: parseNumber(process.env.SUMMARIZE_TOP, 3)
   };
 }
