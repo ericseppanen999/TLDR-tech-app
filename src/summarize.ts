@@ -23,14 +23,14 @@ function buildPrompt(sections: SectionSummaryInput[], maxPerSection: number): st
       " bullet highlights (each <= 20 words)."
   );
   lines.push("Use only the provided items; no speculation.");
-  lines.push("Return JSON: {\"hiring\":[...],\"tech\":[...],\"research\":[...]}.");
+  lines.push("Return JSON: {\"hiring\":[...],\"tech\":[...],\"research\":[...] }.");
 
   for (const section of sections) {
     lines.push("");
     lines.push("SECTION: " + section.title + " (" + section.category + ")");
     section.items.forEach((item, index) => {
       const summary = item.summary ? stripHtml(item.summary) : "";
-      const snippet = summary ? " â€” " + summary.slice(0, 240) : "";
+      const snippet = summary ? " — " + summary.slice(0, 240) : "";
       lines.push(
         `${index + 1}. ${item.title} [${item.source}]${snippet}`.trim()
       );
@@ -38,6 +38,21 @@ function buildPrompt(sections: SectionSummaryInput[], maxPerSection: number): st
   }
 
   return lines.join("\n");
+}
+
+function coerceHighlights(value: unknown): Highlights | null {
+  if (!value || typeof value !== "object") return null;
+  const obj = value as Record<string, unknown>;
+  const hiring = Array.isArray(obj.hiring) ? obj.hiring : null;
+  const tech = Array.isArray(obj.tech) ? obj.tech : null;
+  const research = Array.isArray(obj.research) ? obj.research : null;
+  if (!hiring || !tech || !research) return null;
+
+  return {
+    hiring: hiring.map((item) => String(item)).filter(Boolean),
+    tech: tech.map((item) => String(item)).filter(Boolean),
+    research: research.map((item) => String(item)).filter(Boolean)
+  };
 }
 
 export async function summarizeHighlights(
@@ -51,24 +66,29 @@ export async function summarizeHighlights(
   const client = new OpenAI({ apiKey });
   const prompt = buildPrompt(sections, config.summarizeTop);
 
-  const response = await client.responses.create({
-    model: config.summarizeModel,
-    input: [
-      {
+  try {
+    const response = await client.responses.create({
+      model: config.summarizeModel,
+      input: [{
         role: "user",
         content: prompt
-      }
-    ],
-    temperature: 0.2
-  });
+      }],
+      temperature: 0.2,
+      response_format: { type: "json_object" }
+    });
 
-  const text = response.output_text?.trim();
-  if (!text) return null;
+    const text = response.output_text?.trim();
+    if (!text) return null;
 
-  try {
-    const parsed = JSON.parse(text) as Highlights;
-    return parsed;
-  } catch {
+    try {
+      const parsed = JSON.parse(text);
+      return coerceHighlights(parsed);
+    } catch {
+      return null;
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Summarization failed: ${message}`);
     return null;
   }
 }

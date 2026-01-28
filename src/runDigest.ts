@@ -50,7 +50,7 @@ export async function runDigest(): Promise<void> {
   const deduped = dedupeItems(recentItems);
   const sorted = sortByPublishedDesc(deduped);
 
-  const highlights = await summarizeHighlights(config, [
+  const summaryInputs = [
     {
       category: "hiring",
       title: "Hiring News",
@@ -66,7 +66,12 @@ export async function runDigest(): Promise<void> {
       title: "AI / Research Breakthroughs",
       items: sorted.filter((item) => item.category === "research").slice(0, 24)
     }
-  ]);
+  ];
+
+  const highlights = await summarizeHighlights(config, summaryInputs);
+  if (config.summarizeEnabled && !highlights) {
+    console.warn("Summaries were enabled but no highlights were produced.");
+  }
 
   const digest = buildDigest(sorted, config.maxItemsPerSection, now, highlights || undefined);
   const subject = config.subject;
