@@ -40,6 +40,18 @@ function buildPrompt(sections: SectionSummaryInput[], maxPerSection: number): st
   return lines.join("\n");
 }
 
+function extractJson(text: string): unknown | null {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end === -1 || end <= start) return null;
+  const slice = text.slice(start, end + 1);
+  try {
+    return JSON.parse(slice);
+  } catch {
+    return null;
+  }
+}
+
 function coerceHighlights(value: unknown): Highlights | null {
   if (!value || typeof value !== "object") return null;
   const obj = value as Record<string, unknown>;
@@ -73,8 +85,7 @@ export async function summarizeHighlights(
         role: "user",
         content: prompt
       }],
-      temperature: 0.2,
-      response_format: { type: "json_object" }
+      temperature: 0.2
     });
 
     const text = response.output_text?.trim();
@@ -84,7 +95,8 @@ export async function summarizeHighlights(
       const parsed = JSON.parse(text);
       return coerceHighlights(parsed);
     } catch {
-      return null;
+      const fallback = extractJson(text);
+      return fallback ? coerceHighlights(fallback) : null;
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

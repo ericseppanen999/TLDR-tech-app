@@ -6,7 +6,7 @@ import { isHiringNews, isTechNews } from "./filters";
 import { dedupeItems, sortByPublishedDesc } from "./utils";
 import { sendDigest } from "./email";
 import { FeedItem, FeedSource } from "./types";
-import { summarizeHighlights } from "./summarize";
+import { summarizeHighlights, SectionSummaryInput } from "./summarize";
 
 async function fetchAllFeeds(): Promise<FeedItem[]> {
   const results = await Promise.all(
@@ -50,7 +50,7 @@ export async function runDigest(): Promise<void> {
   const deduped = dedupeItems(recentItems);
   const sorted = sortByPublishedDesc(deduped);
 
-  const summaryInputs = [
+  const summaryInputs: SectionSummaryInput[] = [
     {
       category: "hiring",
       title: "Hiring News",
